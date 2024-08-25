@@ -17,7 +17,7 @@ class UserBase(BaseModel):
     username: str
 
 def get_db():
-    db = SessionLocal
+    db = SessionLocal()
     try:
         yield db
     finally:
@@ -25,4 +25,9 @@ def get_db():
 
 db_dependency = Annotated[Session, Depends(get_db)]
 
-# @app.post("/users", status_code=status.HTTP_201_CREATED)
+@app.post("/users", status_code=status.HTTP_201_CREATED)
+async def create_user(user: UserBase, db: db_dependency):
+    db_user = models.User(**user.model_dump())
+    db.add(db_user)
+    db.commit()
+
