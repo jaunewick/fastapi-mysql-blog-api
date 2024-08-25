@@ -13,7 +13,7 @@ class BlogBase(BaseModel):
     content: str
     user_id: int
 
-class UserModel(BaseModel):
+class UserBase(BaseModel):
     username: str
 
 def get_db():
@@ -25,3 +25,4 @@ def get_db():
 
 db_dependency = Annotated[Session, Depends(get_db)]
 
+# @app.post("/users", status_code=status.HTTP_201_CREATED)
