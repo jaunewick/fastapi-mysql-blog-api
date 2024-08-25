@@ -38,6 +38,14 @@ async def read_blog(blog_id: int, db: db_dependency):
         HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Blog not found")
     return blog
 
+@app.delete("/blog/{blog_id}", status_code=status.HTTP_200_OK)
+async def delete_id(blog_id: int, db: db_dependency):
+    blog = db.query(models.Blog).filter(models.Blog.id == blog_id).first()
+    if blog is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Blog not found")
+    db.delete(blog)
+    db.commit()
+
 @app.post("/users", status_code=status.HTTP_201_CREATED)
 async def create_user(user: UserBase, db: db_dependency):
     db_user = models.User(**user.model_dump())
