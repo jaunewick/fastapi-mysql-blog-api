@@ -25,6 +25,19 @@ def get_db():
 
 db_dependency = Annotated[Session, Depends(get_db)]
 
+@app.post("/blogs", status_code=status.HTTP_201_CREATED)
+async def create_blog(blog: BlogBase, db: db_dependency):
+    db_blog = models.Blog(**blog.model_dump())
+    db.add(db_blog)
+    db.commit()
+
+@app.get("/blogs/{blog_id}", status_code=status.HTTP_200_OK)
+async def read_blog(blog_id: int, db: db_dependency):
+    blog = db.query(models.Blog).filter(models.Blog.id == blog_id).first()
+    if blog is None:
+        HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Blog not found")
+    return blog
+
 @app.post("/users", status_code=status.HTTP_201_CREATED)
 async def create_user(user: UserBase, db: db_dependency):
     db_user = models.User(**user.model_dump())
